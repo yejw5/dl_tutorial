@@ -1,0 +1,50 @@
+name: "BatchNorm Scale"
+layer {
+  name: "data"
+  type: "Input",
+  top: "data"
+  top: "label"
+  input_param { shape: { dim: 64 dim: 3 dim: 28 dim: 28 } }
+}
+
+layer {
+  name: "conv"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv"
+  convolution_param {
+    num_output: 5
+    kernel_size: 3
+    stride: 1
+    bias_filler {
+      value: 1
+    }
+  }
+}
+
+layer {
+  bottom: "conv"
+  top: "bn"
+  name: "bn_caffe"
+  type: "BatchNorm"
+  batch_norm_param {
+    moving_average_fraction: 13
+    use_global_stats: true
+    eps: 0.5
+  }
+}
+layer {
+  bottom: "bn"
+  top: "scale"
+  name: "scale_caffe"
+  type: "Scale"
+  scale_param {
+    filler {
+      value: 0.5
+    }
+    bias_term: true
+    bias_filler {
+      value: -2
+    }
+  }
+}
